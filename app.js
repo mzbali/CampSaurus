@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
+const engine = require('ejs-mate');
 const Campground = require('./models/campground');
 
 mongoose.connect('mongodb://localhost:27017/campsaurus', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
@@ -13,6 +14,8 @@ db.once('open', () => {
 });
 
 const app = express();
+
+app.engine('ejs', engine);
 
 app.set('views', path.join(__dirname, '/views'));
 app.set('view engine', 'ejs');
