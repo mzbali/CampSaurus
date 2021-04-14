@@ -1,0 +1,8 @@
+<% for(let [key,value] of Object.entries(messages)){%>
+<% if(value.length) {%>
+<div class="alert alert-<%= key %> alert-dismissible fade show" role="alert">
+    <%= value %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+<% } %>
+<% } %>
