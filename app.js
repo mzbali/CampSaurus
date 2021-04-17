@@ -4,12 +4,16 @@ const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const engine = require('ejs-mate');
 const ExpressError = require('./utils/ExpressError');
-const campgrounds = require('./routes/campgrounds');
-const reviews = require('./routes/reviews');
+const campgroundRoutes = require('./routes/campgrounds');
+const reviewRoutes = require('./routes/reviews');
 const session = require('express-session');
 const flash = require('connect-flash');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const User = require('./models/user');
+const userRoutes = require('./routes/users');
 
-mongoose.connect('mongodb://localhost:27017/campsaurus', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
+mongoose.connect('mongodb://localhost:27017/campsaurus', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true });
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error: ')); //execute this function everytime the given event(error) is generated
@@ -40,15 +44,25 @@ const sessionOption = {
 }
 app.use(session(sessionOption));
 app.use(flash()); // added req.flash() method to req.
+
+app.use(passport.initialize());
+app.use(passport.session()); //for persitence log in session
+passport.use(new LocalStrategy(User.authenticate())); //take username and password from form and store the user
+
+passport.serializeUser(User.serializeUser()); //from user, userId store it in session
+passport.deserializeUser(User.deserializeUser()); //from userId take all info and populate req.user
+
 app.use((req, res, next) => {
     //res.locals.success = req.flash('success');
     //res.locals.error = req.flash('error');
+    res.locals.currentUser = req.user;
     res.locals.messages = { success: req.flash('success'), danger: req.flash('error') };
     next();
 })
 
-app.use('/campgrounds', campgrounds);
-app.use('/campgrounds/:id/reviews', reviews); //router for review resource where the crud lies
+app.use('/campgrounds', campgroundRoutes);
+app.use('/campgrounds/:id/reviews', reviewRoutes); //router for review resource where the crud lies
+app.use('/', userRoutes);
 
 app.get('/', (req, res) => {
     res.render('home');
