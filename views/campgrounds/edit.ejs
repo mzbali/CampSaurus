@@ -3,7 +3,8 @@
 <h1 class="text-center">Update Camground</h1>
 <div class="row">
     <div class="col-md-6 offset-3">
-        <form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST" novalidate class="validate-form">
+        <form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST" novalidate class="validate-form"
+            enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="campground[title]" class="form-label">Title</label>
                 <input type="text" class="form-control" name="campground[title]" id="campground[title]"
@@ -32,12 +33,8 @@
                 </div>
             </div>
             <div class="mb-3">
-                <label for="campground[image]" class="form-label">Image</label>
-                <input type="text" class="form-control" name="campground[image]" id="campground[image]"
-                    value="<%= campground.image %>" required>
-                <div class="valid-feedback">
-                    Looks good!
-                </div>
+                <label for="images" class="form-label">Image</label>
+                <input type="file" class="form-control" name="images" id="images" multiple>
             </div>
             <div class="mb-3">
                 <label for="campground[description]" class="form-label">Description</label>
@@ -46,6 +43,16 @@
                 <div class="valid-feedback">
                     Looks good!
                 </div>
+            </div>
+            <div class="mb-3">
+                <% campground.images.forEach((img, i)=>{ %>
+                <div class="form-check d-inline-block">
+                    <input class="form-check-input" type="checkbox" name="deleteImages[]" id="image-<%= i %>"
+                        value="<%= img.filename %>">
+                    <label class="form-check-label" for="image-<%= i %>">Delete</label>
+                </div>
+                <img src="<%= img.thumbnail %> " class="img-thumbnail" alt="">
+                <% }) %>
             </div>
             <div class="mb-3">
                 <div>

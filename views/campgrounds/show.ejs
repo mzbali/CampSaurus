@@ -2,7 +2,28 @@
 <link rel="stylesheet" href="/css/star-heart.css">
 <div class="row">
     <div class="card col-md-6 mb-3">
-        <img class="img-fluid" style="max-height: 600px;" src="<%= campground.image %> " class="card-img-top" alt="...">
+        <div id="campgroundImageSlide" class="carousel slide carousel-fade" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <% campground.images.forEach((img,i)=>{ %>
+                <div class="carousel-item <%= i === 0 ? 'active':'' %>">
+                    <img src="<%= img.url %>" class="d-block w-100" alt="">
+                </div>
+                <% }) %>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#campgroundImageSlide"
+                data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#campgroundImageSlide"
+                data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+        <!-- <% for(let image of campground.images) {%>
+        <img class="img-fluid" style="max-height: 600px;" src="<% image.url %> " class="card-img-top" alt="">
+        <% } %> -->
         <div class="card-body">
             <h5 class="card-title"><%= campground.title %> </h5>
             <p class="card-text"><%= campground.description %> </p>
