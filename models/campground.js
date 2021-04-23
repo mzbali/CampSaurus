@@ -23,6 +23,8 @@ const geoJsonSchema = new Schema({
     }
 });
 
+const opts = { toJSON: { virtuals: true } }; //when stringify make virtuals a real property
+
 const CampgroundSchema = new Schema({
     title: String,
     description: String,
@@ -41,7 +43,12 @@ const CampgroundSchema = new Schema({
     },
     images: [ImageSchema],
     geometry: geoJsonSchema
-});
+}, opts);
+
+CampgroundSchema.virtual('properties.popupMarkup').get(function () {
+    return `<a href="/campgrounds/${this._id}">${this.title}</a>
+    <p>${this.description.substring(0, 50)}...</p>`
+})
 
 CampgroundSchema.post('findOneAndDelete', async (campground) => {
     await Review.deleteMany({
