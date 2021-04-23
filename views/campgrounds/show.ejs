@@ -10,6 +10,7 @@
                 </div>
                 <% }) %>
             </div>
+            <% if(campground.images.length > 1) {%>
             <button class="carousel-control-prev" type="button" data-bs-target="#campgroundImageSlide"
                 data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -20,10 +21,8 @@
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Next</span>
             </button>
+            <% } %>
         </div>
-        <!-- <% for(let image of campground.images) {%>
-        <img class="img-fluid" style="max-height: 600px;" src="<% image.url %> " class="card-img-top" alt="">
-        <% } %> -->
         <div class="card-body">
             <h5 class="card-title"><%= campground.title %> </h5>
             <p class="card-text"><%= campground.description %> </p>
@@ -41,6 +40,7 @@
         </div>
     </div>
     <div class="col-md-6 mb-3">
+        <div id='map' style='width: 600px; height: 300px;'></div>
         <% if(currentUser) {%>
         <form method="POST" action="/campgrounds/<%= campground.id %>/reviews" novalidate class="validate-form">
             <div class="mb-3">
@@ -89,3 +89,8 @@
     </div>
 </div>
 <script src="/js/validateRating.js"></script>
+<script>
+    const mapboxToken = '<%- process.env.MAPBOX_TOKEN %>'
+    const campground = <%- JSON.stringify(campground) %>
+</script>
+<script src="/js/showPageMap.js"></script>

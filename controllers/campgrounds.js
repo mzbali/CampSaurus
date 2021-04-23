@@ -1,5 +1,8 @@
 const Campground = require('../models/campground');
 const { cloudinary } = require('../cloudinary');
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const mapBoxToken = process.env.MAPBOX_TOKEN;
+const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 
 module.exports.index = async (req, res) => {
     const campgrounds = await Campground.find({});
@@ -27,12 +30,24 @@ module.exports.showCampground = async (req, res) => {
 
 module.exports.createCampground = async (req, res) => {
     //console.log(req.body.campground);
+    const geoData = await geocoder.forwardGeocode({
+        query: req.body.campground.location,
+        limit: 1
+    }).send();
     const campground = new Campground({ ...req.body.campground });
     campground.author = req.user;
-    //if (!req.body.campground) throw new ExpressError('campground is empty', 400); // we cand also like if req.body.campground.title empty do this etc etc, but its gonna be so muc work so we use joi.
-    if (req.files) {
+    campground.geometry = geoData.body.features[0].geometry;
+    ////if (!req.body.campground) throw new ExpressError('campground is empty', 400); // we cand also like if req.body.campground.title empty do this etc etc, but its gonna be so muc work so we use joi.
+    if (req.files.length) {
         campground.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
         console.log(campground.images);
+    } else {
+        campground.images = [
+            {
+                url: 'https://res.cloudinary.com/zoke/image/upload/v1618892971/CampSaurus/qqtmycezbivypwzzyywn.jpg',
+                filename: 'CampSaurus/qqtmycezbivypwzzyywn.jpg'
+            }
+        ]
     }
     await campground.save();
     req.flash('success', 'Successfully created new campground.');
@@ -57,7 +72,7 @@ module.exports.updateCampground = async (req, res) => {
     //ampground.images.push(...imgs);
     //await campground.save();
     console.log(req.body);
-    if (req.body.deleteImages) {
+    if (req.body.deleteImages.length) {
         await campground.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } });
         for (let image of req.body.deleteImages) {
             await cloudinary.uploader.destroy(image);

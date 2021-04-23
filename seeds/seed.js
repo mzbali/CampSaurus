@@ -36,7 +36,11 @@ const seedDb = async () => {
                     url: 'https://res.cloudinary.com/zoke/image/upload/v1618892972/CampSaurus/d2e8sha7mkgiyidfmin7.jpg',
                     filename: 'CampSaurus/d2e8sha7mkgiyidfmin7'
                 }
-            ]
+            ],
+            geometry: {
+                type: 'Point',
+                coordinates: [cities[random1000].longitude, cities[random1000].latitude]
+            }
         })
         await campground.save();
     }
