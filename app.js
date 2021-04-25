@@ -59,6 +59,11 @@ passport.deserializeUser(User.deserializeUser()); //from userId take all info an
 app.use((req, res, next) => {
     //res.locals.success = req.flash('success');
     //res.locals.error = req.flash('error');
+    if (/\/campgrounds\/[0-9a-fA-F]{24}\/?$/.test(req.originalUrl) || /\/campgrounds\/?$/.test(req.originalUrl)) {
+        res.locals.route = req.originalUrl;
+    } else {
+        res.locals.route = null;
+    }
     res.locals.currentUser = req.user;
     res.locals.messages = { success: req.flash('success'), danger: req.flash('error') };
     next();

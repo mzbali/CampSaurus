@@ -1,5 +1,4 @@
 <% layout('layouts/boilerplate') %>
-<link rel="stylesheet" href="/css/star-heart.css">
 <div class="row">
     <div class="card col-md-6 mb-3">
         <div id="campgroundImageSlide" class="carousel slide carousel-fade" data-bs-ride="carousel">
@@ -40,7 +39,7 @@
         </div>
     </div>
     <div class="col-md-6 mb-3">
-        <div id='map' style='width: 600px; height: 300px;'></div>
+        <div id='map'></div>
         <% if(currentUser) {%>
         <form method="POST" action="/campgrounds/<%= campground.id %>/reviews" novalidate class="validate-form">
             <div class="mb-3">
