@@ -67,12 +67,12 @@ module.exports.renderEditForm = async (req, res) => {
 module.exports.updateCampground = async (req, res) => {
     const { id } = req.params;
     const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }));
-    console.log(imgs);
+    // console.log(imgs);
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground, $push: { images: { $each: imgs } } });
     //ampground.images.push(...imgs);
     //await campground.save();
-    console.log(req.body);
-    if (req.body.deleteImages.length) {
+    // console.log(req.body);
+    if (req.body.deleteImages) {
         await campground.updateOne({ $pull: { images: { filename: { $in: req.body.deleteImages } } } });
         for (let image of req.body.deleteImages) {
             await cloudinary.uploader.destroy(image);
