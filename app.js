@@ -11,6 +11,7 @@ const ExpressError = require('./utils/ExpressError');
 const campgroundRoutes = require('./routes/campgrounds');
 const reviewRoutes = require('./routes/reviews');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
@@ -19,7 +20,8 @@ const userRoutes = require('./routes/users');
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
 
-mongoose.connect('mongodb://localhost:27017/campsaurus', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true });
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/campsaurus';
+mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true });
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error: ')); //execute this function everytime the given event(error) is generated
@@ -37,9 +39,22 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
+
+const secret = process.env.SECRET || 'secret';
+
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    secret,
+    touchAfter: 24 * 3600
+});
+
+store.on('error', e => {
+    console.log('Session Store Error: ', e)
+});
 const sessionOption = {
+    store,
     name: 'foded', //change the default name of session id
-    secret: 'secret',
+    secret,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -141,7 +156,7 @@ app.use((err, req, res, next) => {
     if (!err.message) err.message = 'Something went wrong';
     res.status(statusCode).render('error', { err });
 });
-
-app.listen(3000, () => {
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
     console.log('Listening on port 3000');
 });
