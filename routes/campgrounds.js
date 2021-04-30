@@ -14,7 +14,7 @@ router.route('/')
     .post(isLoggedIn, upload.array('images'), validateCampground, catchAsync(campgrounds.createCampground));
 
 router.get('/new', isLoggedIn, campgrounds.renderNewForm);
-
+router.get('/api', catchAsync(campgrounds.api));
 router.route('/:id')
     .get(catchAsync(campgrounds.showCampground))
     .put(isLoggedIn, isAuthor, upload.array('images'), validateCampground, catchAsync(campgrounds.updateCampground))

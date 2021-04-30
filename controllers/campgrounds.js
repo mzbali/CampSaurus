@@ -1,12 +1,29 @@
 const Campground = require('../models/campground');
 const { cloudinary } = require('../cloudinary');
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const { model } = require('mongoose');
 const mapBoxToken = process.env.MAPBOX_TOKEN;
 const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 
 module.exports.index = async (req, res) => {
-    const campgrounds = await Campground.find({});
-    res.render('campgrounds/index', { campgrounds });
+    let page = parseInt(req.query.page)
+    const limit = 10;
+    const totalDocument = await Campground.countDocuments();
+    const pagination = {};
+    pagination.totalPages = Math.ceil(totalDocument / limit);
+    page <= 0 || page > pagination.totalPages ? page = 1 : '';
+    pagination.currentPage = page;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    if (endIndex < totalDocument) {
+        pagination.next = page + 1;
+    }
+    if (startIndex > 0) {
+        pagination.prev = page - 1;
+    }
+
+    const campgrounds = await Campground.find({}).limit(limit).skip(startIndex).exec();
+    res.render('campgrounds/index', { campgrounds, pagination });
 };
 
 module.exports.renderNewForm = (req, res) => {
@@ -88,3 +105,8 @@ module.exports.deleteCampground = async (req, res) => {
     req.flash('success', 'Deleted the campground.');
     res.redirect('/campgrounds');
 };
+
+module.exports.api = async (req, res) => {
+    const campgrounds = await Campground.find({}).exec();
+    res.send(JSON.stringify(campgrounds));
+}

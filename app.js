@@ -20,7 +20,7 @@ const userRoutes = require('./routes/users');
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
 
-const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/campsaurus';
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/campsaurus';//
 mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true });
 
 const db = mongoose.connection;
@@ -127,7 +127,7 @@ app.use((req, res, next) => {
     //res.locals.success = req.flash('success');
     //res.locals.error = req.flash('error');
     //console.log(req.query);
-    if (/\/campgrounds\/[0-9a-fA-F]{24}\?\_method=\w+$/.test(req.originalUrl) || /\/campgrounds\/[0-9a-fA-F]{24}\/?$/.test(req.originalUrl) || /\/campgrounds\/?$/.test(req.originalUrl)) {
+    if (/^\/campgrounds[\/\?]?.*(?<!\/edit)$/.test(req.originalUrl)) {
         res.locals.route = req.originalUrl;
     } else {
         res.locals.route = null;
@@ -153,10 +153,11 @@ app.all('*', (req, res, next) => {
 //error handler middleware
 app.use((err, req, res, next) => {
     const { statusCode = 500 } = err;
+    if (/^\/campgrounds/.test(req.originalUrl)) res.locals.route = null;
     if (!err.message) err.message = 'Something went wrong';
     res.status(statusCode).render('error', { err });
 });
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-    console.log('Listening on port 3000');
+    console.log(`Listening on port ${port}`);
 });
