@@ -92,6 +92,7 @@ const connectSrcUrls = [
     "https://a.tiles.mapbox.com/",
     "https://b.tiles.mapbox.com/",
     "https://events.mapbox.com/",
+    "https://shielded-harbor-47989.herokuapp.com/"
 ];
 const fontSrcUrls = [];
 app.use(

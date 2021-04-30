@@ -11,7 +11,7 @@ module.exports.index = async (req, res) => {
     const totalDocument = await Campground.countDocuments();
     const pagination = {};
     pagination.totalPages = Math.ceil(totalDocument / limit);
-    page <= 0 || page > pagination.totalPages ? page = 1 : '';
+    page <= 0 || page > pagination.totalPages || typeof page !== 'number' ? page = 1 : '';
     pagination.currentPage = page;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
@@ -21,6 +21,7 @@ module.exports.index = async (req, res) => {
     if (startIndex > 0) {
         pagination.prev = page - 1;
     }
+    console.log(pagination);
 
     const campgrounds = await Campground.find({}).limit(limit).skip(startIndex).exec();
     res.render('campgrounds/index', { campgrounds, pagination });

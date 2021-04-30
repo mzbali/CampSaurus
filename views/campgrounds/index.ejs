@@ -19,8 +19,7 @@
         </div>
     </div>
 </div>
-<% } %>
-<% if(pagination.totalpages>1) {%> 
+<% } %> 
 <nav aria-label="Page navigation example">
     <ul class="pagination">
         <li class="page-item <%= pagination.prev ? '' : 'disabled' %>"><a class="page-link" href="/campgrounds?page=1">First</a></li>
@@ -38,7 +37,6 @@
         <li class="page-item <%= pagination.next ? '' : 'disabled' %>"><a class="page-link" href="/campgrounds?page=<%= pagination.totalPages %>">Last</a></li>
     </ul>
 </nav>
-<% } %> 
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
